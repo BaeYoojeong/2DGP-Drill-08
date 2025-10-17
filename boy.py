@@ -39,6 +39,7 @@ class Run:
         pass
 
     def do(self):
+        self.boy.x = max(0, min(self.boy.x, 780))
         self.boy.frame = (self.boy.frame + 1) % 8
         self.boy.x += self.boy.dir * 5
 
@@ -82,8 +83,12 @@ class A:
         pass
 
     def do(self):
+        self.boy.x = max(0, min(self.boy.x, 780))
         self.boy.frame = (self.boy.frame + 1) % 8
         self.boy.x += self.boy.dir * 5
+        if self.boy.x <= 0 or self.boy.x >= 780:
+            self.boy.dir *= -1
+            self.boy.face_dir = self.boy.dir
         if get_time() - self.boy.A_start_time > 5.0:
             self.boy.state_machine.handle_state_event(('TIME_OUT', None))
 
@@ -106,6 +111,7 @@ class Idle:
         pass
 
     def do(self):
+        self.boy.x = max(0, min(self.boy.x, 780))
         self.boy.frame = (self.boy.frame + 1) % 8
         self.boy.x += self.boy.dir * 5
         if get_time() - self.boy.wait_start_time > 5.0:
