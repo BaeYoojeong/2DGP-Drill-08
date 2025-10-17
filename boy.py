@@ -76,10 +76,12 @@ class A:
         self.boy = boy
         self.boy.sizeX = 100
         self.boy.sizeY = 100
+        self.boy.speed = 5
 
     def enter(self,e):
         self.boy.dir = 1
         self.boy.A_start_time = get_time()
+        self.boy.speed = 5
 
     def exit(self,e):
         pass
@@ -87,9 +89,10 @@ class A:
     def do(self):
         self.boy.x = max(0, min(self.boy.x, 780))
         self.boy.frame = (self.boy.frame + 1) % 8
-        self.boy.x += self.boy.dir * 5
+        self.boy.x += self.boy.dir * self.boy.speed
         self.boy.sizeX += 1
         self.boy.sizeY += 1
+        self.boy.speed += 0.1
         if self.boy.x <= 0 or self.boy.x >= 780:
             self.boy.dir *= -1
             self.boy.face_dir = self.boy.dir
@@ -97,8 +100,8 @@ class A:
             self.boy.state_machine.handle_state_event(('TIME_OUT', None))
 
     def draw(self):
-        if self.boy.face_dir == 1: # right
-            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y,self.boy.sizeX,self.boy.sizeY)
+        if self.boy.face_dir == 1:
+            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y, self.boy.sizeX,self.boy.sizeY)
         else: # face_dir == -1: # left
             self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x, self.boy.y,self.boy.sizeX,self.boy.sizeY)
 
