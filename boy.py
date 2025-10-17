@@ -76,7 +76,6 @@ class A:
         self.boy = boy
         self.boy.sizeX = 100
         self.boy.sizeY = 100
-        self.boy.poseY = 100
 
     def enter(self,e):
         self.boy.dir = 1
