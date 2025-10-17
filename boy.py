@@ -74,6 +74,9 @@ class Sleep:
 class A:
     def __init__(self, boy):
         self.boy = boy
+        self.boy.sizeX = 100
+        self.boy.sizeY = 100
+        self.boy.poseY = 100
 
     def enter(self,e):
         self.boy.dir = 1
@@ -86,6 +89,8 @@ class A:
         self.boy.x = max(0, min(self.boy.x, 780))
         self.boy.frame = (self.boy.frame + 1) % 8
         self.boy.x += self.boy.dir * 5
+        self.boy.sizeX += 1
+        self.boy.sizeY += 1
         if self.boy.x <= 0 or self.boy.x >= 780:
             self.boy.dir *= -1
             self.boy.face_dir = self.boy.dir
@@ -94,9 +99,10 @@ class A:
 
     def draw(self):
         if self.boy.face_dir == 1: # right
-            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y,100,100)
+            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y,self.boy.sizeX,self.boy.sizeY)
         else: # face_dir == -1: # left
-            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x, self.boy.y,100,100)
+            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x, self.boy.y,self.boy.sizeX,self.boy.sizeY)
+
 
 class Idle:
 
