@@ -1,6 +1,5 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
-
+from sdl2 import*
 from state_machine import StateMachine
 
 def space_down(e):
@@ -21,6 +20,8 @@ def left_down(e):
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
+def a_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
 
 class Run:
@@ -69,6 +70,28 @@ class Sleep:
         else: # face_dir == -1: # left
             self.boy.image.clip_composite_draw(self.boy.frame * 100, 200, 100, 100, -3.141592/2, '', self.boy.x+25, self.boy.y-25,100,100)
 
+class A:
+    def __init__(self, boy):
+        self.boy = boy
+
+    def enter(self,e):
+        self.boy.dir = 1
+        self.boy.A_start_time = get_time()
+
+    def exit(self,e):
+        pass
+
+    def do(self):
+        self.boy.frame = (self.boy.frame + 1) % 8
+        self.boy.x += self.boy.dir * 5
+        if get_time() - self.boy.A_start_time > 5.0:
+            self.boy.state_machine.handle_state_event(('TIME_OUT', None))
+
+    def draw(self):
+        if self.boy.face_dir == 1: # right
+            self.boy.image.clip_draw(self.boy.frame * 100, 100, 100, 100, self.boy.x, self.boy.y,100,100)
+        else: # face_dir == -1: # left
+            self.boy.image.clip_draw(self.boy.frame * 100, 0, 100, 100, self.boy.x, self.boy.y,100,100)
 
 class Idle:
 
@@ -84,8 +107,9 @@ class Idle:
 
     def do(self):
         self.boy.frame = (self.boy.frame + 1) % 8
+        self.boy.x += self.boy.dir * 5
         if get_time() - self.boy.wait_start_time > 5.0:
-            self.boy.state_machine.handle_state_event(('TIME_OUT',None))
+            self.boy.state_machine.handle_state_event(('TIME_OUT', None))
 
     def draw(self):
         if self.boy.face_dir == 1: # right
@@ -105,12 +129,15 @@ class Boy:
         self.IDLE = Idle(self)
         self.SLEEP = Sleep(self)
         self.RUN = Run(self)
+        self.A = A(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 self.SLEEP : {space_down : self.IDLE},
-                self.IDLE : {time_out: self.SLEEP, right_up: self.RUN, right_down : self.RUN, left_up: self.RUN, left_down : self.RUN},
-                self.RUN : {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE,left_up:self.IDLE}
+                self.IDLE : {time_out: self.SLEEP, right_up: self.RUN, right_down : self.RUN, left_up: self.RUN, left_down : self.RUN, a_down: self.A},
+                self.RUN : {right_down: self.IDLE, right_up: self.IDLE, left_down: self.IDLE,left_up:self.IDLE, a_down:self.A},
+                self.A: {time_out: self.IDLE}
+
             })
 
 
